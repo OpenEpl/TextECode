@@ -6,6 +6,7 @@
     <RootNamespace>OpenEpl.TextECodeCLI</RootNamespace>
     <LangVersion>9.0</LangVersion>
     <Authors>OpenEpl</Authors>
+    <AssemblyName>TextECode</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

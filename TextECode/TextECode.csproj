@@ -5,6 +5,8 @@
     <RootNamespace>OpenEpl.TextECode</RootNamespace>
     <LangVersion>9.0</LangVersion>
     <Authors>OpenEpl</Authors>
+    <AssemblyName>OpenEpl.TextECode</AssemblyName>
+    <PackageId>OpenEpl.TextECode</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
