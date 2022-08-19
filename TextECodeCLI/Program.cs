@@ -83,17 +83,18 @@ namespace OpenEpl.TextECodeCLI
         public int Run(ILoggerFactory loggerFactory)
         {
             var logger = loggerFactory.CreateLogger<ViewCmd>();
+            var fullProjectFilePath = Path.GetFullPath(ProjectFile);
             if (!File.Exists(ProjectFile))
             {
-                logger.LogError("The input file \"{Path}\" is not found.", ProjectFile);
+                logger.LogError("The input file \"{Path}\" is not found.", fullProjectFilePath);
                 return 1;
             }
-            logger.LogInformation("Restoring \"{Source}\"", ProjectFile);
-            var binProjectPath = Path.Combine(Path.GetDirectoryName(ProjectFile), Path.ChangeExtension(ProjectFile, ".tmp.e"));
+            logger.LogInformation("Restoring \"{Source}\"", fullProjectFilePath);
+            var binProjectPath = Path.ChangeExtension(fullProjectFilePath, ".tmp.e");
             var stopWatchForRestore = new Stopwatch();
             {
                 stopWatchForRestore.Restart();
-                var doc = new TextECodeRestorer(loggerFactory, ProjectFile).Restore();
+                var doc = new TextECodeRestorer(loggerFactory, fullProjectFilePath).Restore();
                 using var file = File.Open(binProjectPath, FileMode.Create);
                 doc.Save(file);
                 stopWatchForRestore.Stop();
