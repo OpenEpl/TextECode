@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Generate": {
+      "commandName": "Project",
+      "commandLineArgs": "generate \"F:\\OneDrive\\源码\\E\\精易模块\\精易模块v10.0.0[源码].e\" \"D:\\精易模块_TextECode\\精易模块.eproject\""
+    },
+    "Restore": {
+      "commandName": "Project",
+      "commandLineArgs": "restore \"D:\\精易模块_TextECode\\精易模块.eproject\" \"D:\\精易模块_TextECode\\result.e\""
+    },
+    "View": {
+      "commandName": "Project",
+      "commandLineArgs": "View \"D:\\精易模块_TextECode\\精易模块.eproject\""
+    }
+  }
+}
