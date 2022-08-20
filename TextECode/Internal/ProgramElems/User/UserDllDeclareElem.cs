@@ -39,8 +39,8 @@ namespace OpenEpl.TextECode.Internal.ProgramElems.User
             var native = new DllDeclareInfo(Id)
             {
                 Name = Name,
-                LibraryName = Tree.libraryName.Text,
-                EntryPoint = Tree.entryPoint.Text,
+                LibraryName = TokenUtils.ReadStringItem(Tree.libraryName),
+                EntryPoint = TokenUtils.ReadStringItem(Tree.entryPoint),
                 Comment = Tree.Comment()?.GetText(),
                 Public = Tree.Public() != null,
                 Parameters = Args.Select(x => x.ToNative()).ToList(),
