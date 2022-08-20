@@ -39,7 +39,7 @@ namespace OpenEpl.TextECodeCLI
             }
             var generator = new TextECodeGenerator(loggerFactory, doc, Output, new EComSearcher(new string[]
             {
-                    Path.GetDirectoryName(Input)
+                    Path.GetDirectoryName(Path.GetFullPath(Input))
             }));
             if (!string.IsNullOrEmpty(SourceSet))
             {
