@@ -49,6 +49,13 @@
             <desktop:ExecutionAlias Alias="TextECode.exe" />
           </uap3:AppExecutionAlias>
         </uap3:Extension>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap3:FileTypeAssociation Name="texteproject" Parameters="view &quot;%1&quot;">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.eproject</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap3:FileTypeAssociation>
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>
