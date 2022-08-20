@@ -78,8 +78,8 @@ namespace OpenEpl.TextECode
             this.FolderKeyMap = Folder?.Folders.ToDictionary(x => x.Key);
             this.FormClassMap = Resource.Forms.Where(x => x.Class != 0).ToDictionary(x => x.Class);
             this.IdToNameMap = new IdToNameMap(doc);
-            this.ProjectFilePath = projectFilePath;
-            this.WorkingDir = Path.GetDirectoryName(projectFilePath);
+            this.ProjectFilePath = Path.GetFullPath(projectFilePath);
+            this.WorkingDir = Path.GetDirectoryName(this.ProjectFilePath);
             this.SrcBasePath = Path.Combine(WorkingDir, "src");
             if (File.Exists(ProjectFilePath))
             {

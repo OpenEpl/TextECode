@@ -80,7 +80,7 @@ namespace OpenEpl.TextECode
             this.LoggerFactory = loggerFactory;
             logger = loggerFactory.CreateLogger<TextECodeRestorer>();
             translatorLogger = loggerFactory.CreateLogger<CodeTranslatorContext>();
-            ProjectFilePath = projectFilePath;
+            ProjectFilePath = Path.GetFullPath(projectFilePath);
             WorkingPath = Path.GetDirectoryName(ProjectFilePath);
             EComSearcher = ecomSearcher;
             SystemDataTypes = new(this);
