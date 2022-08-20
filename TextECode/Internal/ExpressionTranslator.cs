@@ -93,8 +93,7 @@ namespace OpenEpl.TextECode.Internal
                 else
                 {
                     var varKey = ProgramElemName.Var(varName);
-                    var existence = C.Scope.TryGetValue(ProgramElemName.Var(varName), out var targetVariableElem);
-                    switch (existence)
+                    switch (C.Scope.TryGetValue(ProgramElemName.Var(varName), out var targetVariableElem))
                     {
                         case KeyExistence.Available:
                             targetExpr = targetVariableElem switch
@@ -107,19 +106,23 @@ namespace OpenEpl.TextECode.Internal
                         case KeyExistence.Ambiguous:
                             throw new AmbiguousKeyException($"{varKey} is ambiguous");
                         case KeyExistence.NotFound:
-                            if (C.Scope.TryGetValue(ProgramElemName.Type(varName), out var targetDataType) == KeyExistence.Available)
+                            var typeKey = ProgramElemName.Type(varName);
+                            switch (C.Scope.TryGetValue(typeKey, out var targetDataType))
                             {
-                                var elem = (BaseCallableElem)
-                                    ((BaseDataTypeElem)targetDataType).ScopeFromOuter[ProgramElemName.Method(methodName)];
-                                var args = (TecArgListExpression)context.arguments().Accept(this);
-                                var expr = new TecCallExpression(C, elem, null, args, true);
-                                return expr;
+                                case KeyExistence.Available:
+                                    var elem = (BaseCallableElem)
+                                        ((BaseDataTypeElem)targetDataType).ScopeFromOuter[ProgramElemName.Method(methodName)];
+                                    var args = (TecArgListExpression)context.arguments().Accept(this);
+                                    var expr = new TecCallExpression(C, elem, null, args, true);
+                                    return expr;
+                                case KeyExistence.Ambiguous:
+                                    throw new AmbiguousKeyException($"{varKey} is not found and {typeKey} is ambiguous");
+                                case KeyExistence.NotFound:
+                                    throw new KeyNotFoundException($"neither {varKey} nor {typeKey} is found");
+                                case var existence:
+                                    throw new Exception($"Unknown existence: {existence}");
                             }
-                            else
-                            {
-                                throw new KeyNotFoundException($"{varKey} not found and failed to treat it as a data type qualifier");
-                            }
-                        default:
+                        case var existence:
                             throw new Exception($"Unknown existence: {existence}");
                     }
                 }
