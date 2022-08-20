@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextECodeCLI", "TextECodeCL
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "TextECodeCLIWap", "TextECodeCLIWap\TextECodeCLIWap.wapproj", "{1085E739-E546-46DC-B153-47BEDAB6B435}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextECodeContextMenu", "TextECodeContextMenu\TextECodeContextMenu.csproj", "{A5B32578-90E9-4879-AB89-21A773DD00DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{1085E739-E546-46DC-B153-47BEDAB6B435}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1085E739-E546-46DC-B153-47BEDAB6B435}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1085E739-E546-46DC-B153-47BEDAB6B435}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A5B32578-90E9-4879-AB89-21A773DD00DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5B32578-90E9-4879-AB89-21A773DD00DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5B32578-90E9-4879-AB89-21A773DD00DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5B32578-90E9-4879-AB89-21A773DD00DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

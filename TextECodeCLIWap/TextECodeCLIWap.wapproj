@@ -52,6 +52,9 @@
     <ProjectReference Include="..\TextECodeCLI\TextECodeCLI.csproj">
       <PublishProfile>Properties\PublishProfiles\FolderProfile.pubxml</PublishProfile>
     </ProjectReference>
+    <ProjectReference Include="..\TextECodeContextMenu\TextECodeContextMenu.csproj">
+      <PublishProfile>Properties\PublishProfiles\FolderProfile.pubxml</PublishProfile>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\LargeTile.scale-100.png" />

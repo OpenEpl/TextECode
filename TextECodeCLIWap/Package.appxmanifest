@@ -6,7 +6,10 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
-  IgnorableNamespaces="uap uap3 rescap">
+  xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4"
+  xmlns:desktop5="http://schemas.microsoft.com/appx/manifest/desktop/windows10/5"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  IgnorableNamespaces="uap uap3 desktop4 desktop5 com rescap">
 
   <Identity
     Name="b74b3903-090f-4c4c-b09e-ae5a854d3990"
@@ -56,6 +59,26 @@
             </uap:SupportedFileTypes>
           </uap3:FileTypeAssociation>
         </uap:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:SurrogateServer DisplayName="TextECodeContextMenu.GenerateCmd">
+              <com:Class Id="f481db40-c55e-4d0e-8854-6f92f788f855" Path="TextECodeContextMenu\TextECodeContextMenu.comhost.dll" ThreadingModel="Both"/>
+            </com:SurrogateServer>
+            <com:SurrogateServer DisplayName="TextECodeContextMenu.RestoreCmd">
+              <com:Class Id="ea7015ff-6cf8-4b6a-b0dd-0f9ca9553b96" Path="TextECodeContextMenu\TextECodeContextMenu.comhost.dll" ThreadingModel="Both"/>
+            </com:SurrogateServer>
+          </com:ComServer>
+        </com:Extension>
+        <desktop4:Extension Category="windows.fileExplorerContextMenus">
+          <desktop4:FileExplorerContextMenus>
+            <desktop5:ItemType Type=".e">
+              <desktop5:Verb Id="GenerateCmd" Clsid="f481db40-c55e-4d0e-8854-6f92f788f855" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".eproject">
+              <desktop5:Verb Id="RestoreCmd" Clsid="ea7015ff-6cf8-4b6a-b0dd-0f9ca9553b96" />
+            </desktop5:ItemType>
+          </desktop4:FileExplorerContextMenus>
+        </desktop4:Extension>
       </Extensions>
     </Application>
   </Applications>
