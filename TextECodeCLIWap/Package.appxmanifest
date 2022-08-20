@@ -6,8 +6,7 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
-  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
-  IgnorableNamespaces="uap uap3 uap5 rescap">
+  IgnorableNamespaces="uap uap3 rescap">
 
   <Identity
     Name="b74b3903-090f-4c4c-b09e-ae5a854d3990"
@@ -42,14 +41,14 @@
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-        <uap5:Extension
+        <uap3:Extension
             Category="windows.appExecutionAlias"
             Executable="TextECodeCLI\TextECode.exe"
             EntryPoint="Windows.FullTrustApplication">
-          <uap5:AppExecutionAlias>
-            <uap5:ExecutionAlias Alias="TextECode.exe" />
-          </uap5:AppExecutionAlias>
-        </uap5:Extension>
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="TextECode.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
       </Extensions>
     </Application>
   </Applications>
