@@ -21,7 +21,7 @@ namespace OpenEpl.TextECodeCLI
         [Value(0, Required = true, HelpText = "Set the input file (*.e)")]
         public string Input { get; set; }
 
-        [Value(1, Required = true, HelpText = "Set the output project file path (*.eproject)")]
+        [Value(1, Required = false, HelpText = "Set the output project file path (*.eproject)")]
         public string Output { get; set; }
 
         [Option("source-set", HelpText = "Set the relative path of source set")]
@@ -36,6 +36,10 @@ namespace OpenEpl.TextECodeCLI
             using (var file = File.OpenRead(Input))
             {
                 doc.Load(file);
+            }
+            if (Output is null)
+            {
+                Output = Path.ChangeExtension(Input, ".eproject");
             }
             var generator = new TextECodeGenerator(loggerFactory, doc, Output, new EComSearcher(new string[]
             {
@@ -60,11 +64,15 @@ namespace OpenEpl.TextECodeCLI
         [Value(0, Required = true, HelpText = "Set the input project file path (*.eproject)")]
         public string Input { get; set; }
 
-        [Value(1, Required = true, HelpText = "Set the output file (*.e)")]
+        [Value(1, Required = false, HelpText = "Set the output file (*.e)")]
         public string Output { get; set; }
 
         public int Run(ILoggerFactory loggerFactory)
         {
+            if (Output is null)
+            {
+                Output = Path.ChangeExtension(Input, ".e");
+            }
             var doc = new TextECodeRestorer(loggerFactory, Input).Restore();
             using (var file = File.Open(Output, FileMode.Create))
             {
