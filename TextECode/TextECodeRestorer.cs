@@ -164,7 +164,6 @@ namespace OpenEpl.TextECode
                         return (doc: null, model: x, file: null);
                     }
                 })
-                .Where(x => x.doc != null)
                 .ToList();
 
 
@@ -177,7 +176,7 @@ namespace OpenEpl.TextECode
                     GuidString = x.Guid,
                     Version = x.Version
                 })
-                .Concat(ecoms.SelectMany(x => x.doc.Get(CodeSection.Key).Libraries))
+                .Concat(ecoms.Where(x => x.doc != null).SelectMany(x => x.doc.Get(CodeSection.Key).Libraries))
                 .GroupBy(x => Guid.Parse(x.GuidString))
                 .Select(g =>
                 {
@@ -244,7 +243,38 @@ namespace OpenEpl.TextECode
             var ecTopLevelScopes = new List<IScope<ProgramElemName, ProgramElem>>();
             foreach (var (ecDoc, ecModel, ecFile) in ecoms)
             {
-                ecTopLevelScopes.Add(new EComImporter(this, ecDoc, ecModel, ecFile).Import());
+                if (ecDoc == null)
+                {
+                    ECDependencies.ECDependencies.Add(new ECDependencyInfo()
+                    {
+                        InfoVersion = 2,
+                        Name = ecModel.Name,
+                        DefinedIds = new(),
+                        ReExport = ecModel.ReExport,
+                        Path = ecModel.Path,
+                        FileSize = 0,
+                        FileLastModifiedDate = DateTime.FromFileTimeUtc(0)
+                    });
+                    continue;
+                }
+                try
+                {
+                    ecTopLevelScopes.Add(new EComImporter(this, ecDoc, ecModel, ecFile).Import());
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "导入模块 {Name} 失败，文件路径：{Path}", ecModel.Name, ecModel.Path);
+                    ECDependencies.ECDependencies.Add(new ECDependencyInfo()
+                    {
+                        InfoVersion = 2,
+                        Name = ecModel.Name,
+                        DefinedIds = new(),
+                        ReExport = ecModel.ReExport,
+                        Path = ecModel.Path,
+                        FileSize = 0,
+                        FileLastModifiedDate = DateTime.FromFileTimeUtc(0)
+                    });
+                }
             }
 
             UserTopLevelScope = new();
