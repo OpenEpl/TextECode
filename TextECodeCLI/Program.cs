@@ -27,6 +27,9 @@ namespace OpenEpl.TextECodeCLI
         [Option("source-set", HelpText = "Set the relative path of source set")]
         public string SourceSet { get; set; }
 
+        [Option("program-out-file", HelpText = "Set the out file of the program")]
+        public string ProgramOutFile { get; set; }
+
         [Option('c', "allow-cleanup", Default = true, HelpText = "Delete non-generated files", Required = false)]
         public bool DeleteNonGeneratedFiles { get; set; }
 
@@ -48,6 +51,10 @@ namespace OpenEpl.TextECodeCLI
             if (!string.IsNullOrEmpty(SourceSet))
             {
                 generator.SetSourceSet(SourceSet);
+            }
+            if (!string.IsNullOrEmpty(ProgramOutFile))
+            {
+                generator.SetProgramOutFile(ProgramOutFile);
             }
             generator.Generate();
             if (DeleteNonGeneratedFiles)

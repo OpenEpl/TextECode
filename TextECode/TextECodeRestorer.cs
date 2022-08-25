@@ -270,6 +270,8 @@ namespace OpenEpl.TextECode
 
             ESysEncoding = doc.DetermineEncoding();
 
+            Losable.OutFile = string.IsNullOrEmpty(projectModel.OutFile) ? string.Empty : Path.GetFullPath(projectModel.OutFile, WorkingPath);
+
             AstMap = new();
             {
                 var astTasks = srcBase.GetFiles("*.ecode", SearchOption.AllDirectories)

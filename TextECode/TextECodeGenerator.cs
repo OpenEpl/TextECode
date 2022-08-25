@@ -45,6 +45,7 @@ namespace OpenEpl.TextECode
         public string WorkingDir { get; }
         public string ProjectFilePath { get; }
         private string SrcBasePath;
+        private string ProgramOutFile;
         private readonly HashSet<int> handledIds = new();
         private readonly HashSet<int> publicClassIds = new();
         private readonly HashSet<int> hiddenClassIds = new();
@@ -87,7 +88,8 @@ namespace OpenEpl.TextECode
                 {
                     using var reader = new JsonTextReader(new StreamReader(File.Open(ProjectFilePath, FileMode.Open), Encoding.UTF8));
                     var projectModel = JsonSerializer.Create().Deserialize<ProjectModel>(reader);
-                    this.SrcBasePath = Path.Combine(WorkingDir, projectModel.SourceSet);
+                    this.SrcBasePath = Path.GetFullPath(projectModel.SourceSet, WorkingDir);
+                    this.ProgramOutFile = Path.GetFullPath(projectModel.OutFile, WorkingDir);
                 }
                 catch (Exception e)
                 {
@@ -117,7 +119,12 @@ namespace OpenEpl.TextECode
 
         public void SetSourceSet(string sourceSet)
         {
-            this.SrcBasePath = Path.Combine(WorkingDir, sourceSet);
+            this.SrcBasePath = Path.GetFullPath(sourceSet, WorkingDir);
+        }
+
+        public void SetProgramOutFile(string outFile)
+        {
+            this.ProgramOutFile = Path.GetFullPath(outFile, WorkingDir);
         }
 
         public TextECodeGenerator Generate()
@@ -208,7 +215,8 @@ namespace OpenEpl.TextECode
                 WriteVersion = ProjectConfig.WriteVersion,
                 CompilePlugins = ProjectConfig.CompilePlugins,
                 ExportPublicClassMethod = ProjectConfig.ExportPublicClassMethod,
-                SourceSet = Path.GetRelativePath(WorkingDir, SrcBasePath)
+                SourceSet = Path.GetRelativePath(WorkingDir, SrcBasePath),
+                OutFile = string.IsNullOrEmpty(ProgramOutFile) ? null : Path.GetRelativePath(WorkingDir, ProgramOutFile)
             };
             IEnumerable<DependencyModel> dependencies = Code.Libraries.Select(x => new DependencyModel.ELib(
                 x.Name,

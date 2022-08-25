@@ -40,6 +40,9 @@ namespace OpenEpl.TextECode.Model
 
         public string SourceSet { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string OutFile { get; set; }
+
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         [DefaultValue("")]
         public string Description { get; set; } = "";
