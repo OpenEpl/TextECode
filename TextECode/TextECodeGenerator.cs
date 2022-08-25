@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MimeDetective;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OpenEpl.TextECode.Internal;
 using OpenEpl.TextECode.Model;
 using QIQI.EProjectFile;
@@ -42,6 +43,7 @@ namespace OpenEpl.TextECode
         private readonly Dictionary<int, CodeFolderInfo> FolderKeyMap;
         private readonly Dictionary<int, FormInfo> FormClassMap;
         private readonly IdToNameMap IdToNameMap;
+        public IDictionary<string, JToken> ExtensionData { get; set; }
         public string WorkingDir { get; }
         public string ProjectFilePath { get; }
         private string SrcBasePath;
@@ -90,6 +92,7 @@ namespace OpenEpl.TextECode
                     var projectModel = JsonSerializer.Create().Deserialize<ProjectModel>(reader);
                     this.SrcBasePath = Path.GetFullPath(projectModel.SourceSet, WorkingDir);
                     this.ProgramOutFile = Path.GetFullPath(projectModel.OutFile, WorkingDir);
+                    this.ExtensionData = projectModel.ExtensionData;
                 }
                 catch (Exception e)
                 {
@@ -216,7 +219,8 @@ namespace OpenEpl.TextECode
                 CompilePlugins = ProjectConfig.CompilePlugins,
                 ExportPublicClassMethod = ProjectConfig.ExportPublicClassMethod,
                 SourceSet = Path.GetRelativePath(WorkingDir, SrcBasePath),
-                OutFile = string.IsNullOrEmpty(ProgramOutFile) ? null : Path.GetRelativePath(WorkingDir, ProgramOutFile)
+                OutFile = string.IsNullOrEmpty(ProgramOutFile) ? null : Path.GetRelativePath(WorkingDir, ProgramOutFile),
+                ExtensionData = ExtensionData
             };
             IEnumerable<DependencyModel> dependencies = Code.Libraries.Select(x => new DependencyModel.ELib(
                 x.Name,

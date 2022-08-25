@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -91,5 +92,8 @@ namespace OpenEpl.TextECode.Model
         public bool ExportPublicClassMethod { get; set; }
 
         public List<DependencyModel> Dependencies { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> ExtensionData { get; set; }
     }
 }
