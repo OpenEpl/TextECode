@@ -48,6 +48,9 @@ namespace OpenEpl.TextECode.Model
         [DefaultValue("")]
         public string Description { get; set; } = "";
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Icon { get; set; }
+
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         [DefaultValue("")]
         public string Author { get; set; } = "";

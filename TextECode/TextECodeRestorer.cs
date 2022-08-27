@@ -290,6 +290,18 @@ namespace OpenEpl.TextECode
 
             Code.Libraries = libraryRefInfos.ToArray();
 
+            if (!string.IsNullOrEmpty(projectModel.Icon))
+            {
+                try
+                {
+                    Code.IconData = File.ReadAllBytes(Path.GetFullPath(projectModel.Icon, WorkingPath));
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "读取图标 {Icon} 失败", projectModel.Icon);
+                }
+            }
+
             var doc = new EplDocument();
 
             var system = GenerateSystemSection(projectModel);

@@ -48,6 +48,7 @@ namespace OpenEpl.TextECode
         public string ProjectFilePath { get; }
         private string SrcBasePath;
         private string ProgramOutFile;
+        private string IconPath;
         private readonly HashSet<int> handledIds = new();
         private readonly HashSet<int> publicClassIds = new();
         private readonly HashSet<int> hiddenClassIds = new();
@@ -91,7 +92,14 @@ namespace OpenEpl.TextECode
                     using var reader = new JsonTextReader(new StreamReader(File.Open(ProjectFilePath, FileMode.Open), Encoding.UTF8));
                     var projectModel = JsonSerializer.Create().Deserialize<ProjectModel>(reader);
                     this.SrcBasePath = Path.GetFullPath(projectModel.SourceSet, WorkingDir);
-                    this.ProgramOutFile = Path.GetFullPath(projectModel.OutFile, WorkingDir);
+                    if (!string.IsNullOrEmpty(projectModel.OutFile))
+                    {
+                        this.ProgramOutFile = Path.GetFullPath(projectModel.OutFile, WorkingDir);
+                    }
+                    if (!string.IsNullOrEmpty(projectModel.Icon))
+                    {
+                        this.IconPath = Path.GetFullPath(projectModel.Icon, WorkingDir);
+                    }
                     this.ExtensionData = projectModel.ExtensionData;
                 }
                 catch (Exception e)
@@ -148,6 +156,13 @@ namespace OpenEpl.TextECode
             }
             handledIds.Clear();
             Directory.CreateDirectory(WorkingDir);
+            if (HasIcon())
+            {
+                IconPath ??= Path.Combine(WorkingDir, "Icon.ico");
+                Directory.CreateDirectory(Path.GetDirectoryName(IconPath));
+                File.WriteAllBytes(IconPath, Code.IconData);
+                GeneratedPaths.Add(IconPath);
+            }
             GenerateProjectFile();
             if (Folder != null)
             {
@@ -206,6 +221,7 @@ namespace OpenEpl.TextECode
                 ProjectType = (EplProjectType)System.ProjectType,
                 Language = (EplLanguage)System.Language,
                 Description = ProjectConfig.Description,
+                Icon = HasIcon() ? (string.IsNullOrEmpty(IconPath) ? "Icon.ico" : Path.GetRelativePath(WorkingDir, IconPath)) : null,
                 Author = ProjectConfig.Author,
                 ZipCode = ProjectConfig.ZipCode,
                 Address = ProjectConfig.Address,
@@ -250,8 +266,24 @@ namespace OpenEpl.TextECode
             }).Serialize(writer, projectModel);
         }
 
+        private bool HasIcon()
+        {
+            return Code.IconData?.Length != 0;
+        }
+
         public TextECodeGenerator DeleteNonGeneratedFiles()
         {
+            if (!string.IsNullOrEmpty(IconPath) && !GeneratedPaths.Contains(IconPath)) 
+            {
+                try
+                {
+                    File.Delete(IconPath);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "无法删除文件 \"{Path}\"", IconPath);
+                }
+            }
             var srcBase = new DirectoryInfo(SrcBasePath);
             var NonGeneratedECodes = srcBase.GetFiles("*.ecode", SearchOption.AllDirectories)
                 .Where(x => !GeneratedPaths.Contains(x.FullName));
