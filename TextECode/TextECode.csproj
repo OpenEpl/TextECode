@@ -27,11 +27,11 @@
     </PackageReference>
     <PackageReference Include="Mime-Detective" Version="22.7.21" />
     <PackageReference Include="Mime-Detective.Definitions.Condensed" Version="22.7.21" />
-    <PackageReference Include="QIQI.EProjectFile" Version="1.7.4">
+    <PackageReference Include="QIQI.EProjectFile" Version="1.7.6">
       <PrivateAssets>build; analyzers</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="10.7.0" PrivateAssets="all" />
+    <PackageReference Include="Antlr4BuildTasks" Version="11.1.0" PrivateAssets="all" />
     <PackageReference Include="QuikGraph" Version="2.5.0" />
   </ItemGroup>
 
