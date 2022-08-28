@@ -7,6 +7,7 @@
     <LangVersion>9.0</LangVersion>
     <Authors>OpenEpl</Authors>
     <AssemblyName>TextECode</AssemblyName>
+    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>

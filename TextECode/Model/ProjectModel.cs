@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using VersionConverter = Newtonsoft.Json.Converters.VersionConverter;
 
 namespace OpenEpl.TextECode.Model
 {

@@ -5,6 +5,7 @@
     <EnableComHosting>true</EnableComHosting>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
+    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
 </Project>

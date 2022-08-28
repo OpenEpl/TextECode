@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>OpenEpl.TextECode</RootNamespace>
     <LangVersion>9.0</LangVersion>
     <Authors>OpenEpl</Authors>
     <AssemblyName>OpenEpl.TextECode</AssemblyName>
     <PackageId>OpenEpl.TextECode</PackageId>
+    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
