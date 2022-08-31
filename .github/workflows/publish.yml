@@ -98,7 +98,12 @@ jobs:
           $checksumAppx = (Get-FileHash -LiteralPath '${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Appx.zip' -Algorithm SHA512).Hash
           $checksumPortable_x86 = (Get-FileHash -LiteralPath '${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Portable_x86.zip' -Algorithm SHA512).Hash
           $checksumPortable_x64 = (Get-FileHash -LiteralPath '${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Portable_x64.zip' -Algorithm SHA512).Hash
-          cd ChocolateyPackages/textecode.install
+          cd ${{ env.GITHUB_WORKSPACE }}/ChocolateyPackages/textecode.install
           ./config.ps1 -Version ${{ steps.get-version.outputs.version }} -ChecksumAppx $checksumAppx -ChecksumPortable_x86 $checksumPortable_x86 -ChecksumPortable_x64 $checksumPortable_x64
+          choco pack
+          choco push --source https://push.chocolatey.org/
+
+          cd ${{ env.GITHUB_WORKSPACE }}/ChocolateyPackages/textecode
+          ./config.ps1 -Version ${{ steps.get-version.outputs.version }}
           choco pack
           choco push --source https://push.chocolatey.org/

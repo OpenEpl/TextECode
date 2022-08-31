@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>textecode.install</id>
+    <version>0.0.0</version>
+    <packageSourceUrl>https://github.com/OpenEpl/TextECode/tree/main/ChocolateyPackages/textecode</packageSourceUrl>
+    <owners>OpenEpl</owners>
+    <title>TextECode</title>
+    <authors>OpenEpl</authors>
+    <projectUrl>https://github.com/OpenEpl/TextECode/</projectUrl>
+    <iconUrl>https://rawcdn.githack.com/OpenEpl/TextECode/dfc768e9eeb3c64fb718fbdef4ff4b6e941ba409/TextECodeCLIWap/Images/StoreLogo.scale-400.png</iconUrl>
+    <copyright>Copyright (c) 2022 OpenEpl</copyright>
+    <licenseUrl>https://github.com/OpenEpl/TextECode/blob/main/LICENSE.txt</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/OpenEpl/TextECode/</projectSourceUrl>
+    <docsUrl>https://github.com/OpenEpl/TextECode/blob/main/README.md</docsUrl>
+    <bugTrackerUrl>https://github.com/OpenEpl/TextECode/issues/new</bugTrackerUrl>
+    <tags>epl text ecode</tags>
+    <summary>A tool to help EPL work with plain text codes</summary>
+    <description>A tool to help EPL work with plain text codes</description>
+    <dependencies>
+      <dependency id="textecode.install" version="[0.0.0]" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
