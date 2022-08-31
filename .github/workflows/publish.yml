@@ -56,21 +56,21 @@ jobs:
         shell: pwsh
 
       - name: Restore
-        working-directory: ${{ env.GITHUB_WORKSPACE }}
+        working-directory: ${{ github.workspace }}
         run: |
           msbuild "TextECode.sln" "/t:Restore" "/p:Configuration=${{ env.BUILD_CONFIGURATION }};Version=${{ steps.get-version.outputs.version }};Platform=x64"
           msbuild "TextECodeCLI\TextECodeCLI.csproj" "/t:Restore" "/p:Configuration=${{ env.BUILD_CONFIGURATION }};Version=${{ steps.get-version.outputs.version }};DeployOnBuild=true;PublishProfile=TextECodeCLI\Properties\PublishProfiles\publish-win-x64-self-contained.pubxml"
           msbuild "TextECodeCLI\TextECodeCLI.csproj" "/t:Restore" "/p:Configuration=${{ env.BUILD_CONFIGURATION }};Version=${{ steps.get-version.outputs.version }};DeployOnBuild=true;PublishProfile=TextECodeCLI\Properties\PublishProfiles\publish-win-x86-self-contained.pubxml"
 
       - name: Build
-        working-directory: ${{ env.GITHUB_WORKSPACE }}
+        working-directory: ${{ github.workspace }}
         run: |
           msbuild "TextECode.sln" "/p:Configuration=${{ env.BUILD_CONFIGURATION }};Version=${{ steps.get-version.outputs.version }};Platform=x64"
           msbuild "TextECodeCLI\TextECodeCLI.csproj" "/t:publish" "/p:Configuration=${{ env.BUILD_CONFIGURATION }};Version=${{ steps.get-version.outputs.version }};DeployOnBuild=true;PublishProfile=TextECodeCLI\Properties\PublishProfiles\publish-win-x64-self-contained.pubxml"
           msbuild "TextECodeCLI\TextECodeCLI.csproj" "/t:publish" "/p:Configuration=${{ env.BUILD_CONFIGURATION }};Version=${{ steps.get-version.outputs.version }};DeployOnBuild=true;PublishProfile=TextECodeCLI\Properties\PublishProfiles\publish-win-x86-self-contained.pubxml"
 
       - name: Archive
-        working-directory: ${{ env.GITHUB_WORKSPACE }}
+        working-directory: ${{ github.workspace }}
         run: |
           Compress-Archive -Path ".\TextECodeCLIWap\AppPackages\*" -DestinationPath "${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Appx.zip"
           Rename-Item -Path ".\TextECodeCLI\publish\win-x64" -NewName "TextECode_${{ steps.get-version.outputs.version }}_Portable_x64"
@@ -93,17 +93,17 @@ jobs:
             ${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_SelfContained_x64.zip
 
       - name: Release (Chocolatey)
-        working-directory: ${{ env.GITHUB_WORKSPACE }}
+        working-directory: ${{ github.workspace }}
         run: |
           $checksumAppx = (Get-FileHash -LiteralPath '${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Appx.zip' -Algorithm SHA512).Hash
           $checksumPortable_x86 = (Get-FileHash -LiteralPath '${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Portable_x86.zip' -Algorithm SHA512).Hash
           $checksumPortable_x64 = (Get-FileHash -LiteralPath '${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Portable_x64.zip' -Algorithm SHA512).Hash
-          cd ${{ env.GITHUB_WORKSPACE }}/ChocolateyPackages/textecode.install
+          cd ${{ github.workspace }}/ChocolateyPackages/textecode.install
           ./config.ps1 -Version ${{ steps.get-version.outputs.version }} -ChecksumAppx $checksumAppx -ChecksumPortable_x86 $checksumPortable_x86 -ChecksumPortable_x64 $checksumPortable_x64
           choco pack
           choco push --source https://push.chocolatey.org/
 
-          cd ${{ env.GITHUB_WORKSPACE }}/ChocolateyPackages/textecode
+          cd ${{ github.workspace }}/ChocolateyPackages/textecode
           ./config.ps1 -Version ${{ steps.get-version.outputs.version }}
           choco pack
           choco push --source https://push.chocolatey.org/
