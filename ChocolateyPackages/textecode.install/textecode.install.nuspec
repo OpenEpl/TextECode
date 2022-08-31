@@ -3,7 +3,7 @@
   <metadata>
     <id>textecode.install</id>
     <version>0.0.0</version>
-    <packageSourceUrl>https://github.com/OpenEpl/TextECode/ChocolateyPackages/</packageSourceUrl>
+    <packageSourceUrl>https://github.com/OpenEpl/TextECode/tree/main/ChocolateyPackages/textecode.install</packageSourceUrl>
     <owners>OpenEpl</owners>
     <title>TextECode (Install)</title>
     <authors>OpenEpl</authors>
