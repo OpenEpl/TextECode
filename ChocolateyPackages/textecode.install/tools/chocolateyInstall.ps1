@@ -23,7 +23,7 @@ if ($useAppx) {
 else {
     Install-ChocolateyZipPackage -PackageName 'TextECodePortable' `
         -Url $portableUrl_x86 -Checksum $checksumPortable_x86 -ChecksumType sha512 `
-        -Url64 $portableUrl_x64 -Checksum64 $checksumPortable_x64 -ChecksumType sha512 `
+        -Url64 $portableUrl_x64 -Checksum64 $checksumPortable_x64 -ChecksumType64 sha512 `
         -UnzipLocation $toolsDir
   (Get-ChildItem -File -Recurse -Path $toolsDir -Include 'TextECode.exe') | Select-Object -First 1 | ForEach-Object { Install-BinFile 'TextECode' -Path $_.FullName }
 }
