@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
-    <id>textecode.install</id>
+    <id>textecode</id>
     <version>0.0.0</version>
     <packageSourceUrl>https://github.com/OpenEpl/TextECode/tree/main/ChocolateyPackages/textecode</packageSourceUrl>
     <owners>OpenEpl</owners>
@@ -23,6 +23,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="tools\**" target="tools" />
+    <file src="textecode.nuspec" />
   </files>
 </package>
