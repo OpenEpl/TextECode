@@ -40,6 +40,12 @@ jobs:
         env:
           PFX_CONTENT: ${{ secrets.PFX_CONTENT }}
 
+      - name: Set api key for Chocolatey
+        run: |
+          choco apikey --key $env:CHOCOLATEY_API_KEY --source https://push.chocolatey.org/
+        env:
+          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+
       - name: Set version in Appx Manifest
         run: |
           $version = [System.Version]::Parse("${{ steps.get-version.outputs.version }}")
@@ -75,7 +81,8 @@ jobs:
           Compress-Archive -Path ".\TextECodeCLI\publish\TextECode_${{ steps.get-version.outputs.version }}_SelfContained_x64" -DestinationPath "${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_SelfContained_x64.zip"
           Rename-Item -Path ".\TextECodeCLI\publish\win-x86-self-contained" -NewName "TextECode_${{ steps.get-version.outputs.version }}_SelfContained_x86"
           Compress-Archive -Path ".\TextECodeCLI\publish\TextECode_${{ steps.get-version.outputs.version }}_SelfContained_x86" -DestinationPath "${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_SelfContained_x86.zip"
-      - name: Release
+
+      - name: Release (GitHub)
         uses: softprops/action-gh-release@v1
         with:
           files: |
@@ -84,3 +91,14 @@ jobs:
             ${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Portable_x64.zip
             ${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_SelfContained_x86.zip
             ${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_SelfContained_x64.zip
+
+      - name: Release (Chocolatey)
+        working-directory: ${{ env.GITHUB_WORKSPACE }}
+        run: |
+          $checksumAppx = (Get-FileHash -LiteralPath '${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Appx.zip' -Algorithm SHA512).Hash
+          $checksumPortable_x86 = (Get-FileHash -LiteralPath '${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Portable_x86.zip' -Algorithm SHA512).Hash
+          $checksumPortable_x64 = (Get-FileHash -LiteralPath '${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Portable_x64.zip' -Algorithm SHA512).Hash
+          cd ChocolateyPackages/textecode.install
+          ./config.ps1 -Version ${{ steps.get-version.outputs.version }} -ChecksumAppx $checksumAppx -ChecksumPortable_x86 $checksumPortable_x86 -ChecksumPortable_x64 $checksumPortable_x64
+          choco pack
+          choco push --source https://push.chocolatey.org/
