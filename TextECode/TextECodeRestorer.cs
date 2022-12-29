@@ -555,7 +555,7 @@ namespace OpenEpl.TextECode
                 Copyright = projectModel.Copyright,
                 Version = projectModel.Version,
                 WriteVersion = projectModel.WriteVersion,
-                CompilePlugins = projectModel.CompilePlugins,
+                CompilePlugins = projectModel.CompilePlugins ?? string.Empty,
                 ExportPublicClassMethod = projectModel.ExportPublicClassMethod,
             };
         }

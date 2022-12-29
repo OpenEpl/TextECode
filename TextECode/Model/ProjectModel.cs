@@ -45,52 +45,42 @@ namespace OpenEpl.TextECode.Model
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string OutFile { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [DefaultValue("")]
-        public string Description { get; set; } = "";
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Icon { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [DefaultValue("")]
-        public string Author { get; set; } = "";
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Author { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [DefaultValue("")]
-        public string ZipCode { get; set; } = "";
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string ZipCode { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [DefaultValue("")]
-        public string Address { get; set; } = "";
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Address { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [DefaultValue("")]
-        public string TelephoneNumber { get; set; } = "";
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string TelephoneNumber { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [DefaultValue("")]
-        public string FaxNumber { get; set; } = "";
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string FaxNumber { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [DefaultValue("")]
-        public string Email { get; set; } = "";
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Email { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [DefaultValue("")]
-        public string Homepage { get; set; } = "";
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Homepage { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [DefaultValue("")]
-        public string Copyright { get; set; } = "";
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Copyright { get; set; }
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         [DefaultValue(true)]
         public bool WriteVersion { get; set; } = true;
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [DefaultValue("")]
-        public string CompilePlugins { get; set; } = "";
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string CompilePlugins { get; set; }
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool ExportPublicClassMethod { get; set; }
