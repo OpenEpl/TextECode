@@ -577,7 +577,7 @@ namespace OpenEpl.TextECode
                     Expand = true
                 };
                 Folder.Folders.Add(subFolder);
-                var subIds = HandleFolder(item, folderId);
+                var subIds = HandleFolder(item, subFolderId);
                 subFolder.Children = subIds.ToArray();
             }
             foreach (var item in directory.EnumerateFiles("*.eform"))
