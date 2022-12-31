@@ -265,7 +265,7 @@ namespace OpenEpl.TextECode
             }
             projectModel.Dependencies = dependencies.ToList();
             List<string> externalFiles = ProjectConfigEx?.ExternalFilePaths
-                ?.Select(x => Path.GetFullPath(x, ExternalFilesDir))
+                ?.Select(x => ExternalFilesDir is null ? x : Path.GetFullPath(x, ExternalFilesDir))
                 ?.Select(x => Path.GetRelativePath(WorkingDir, x).Replace('\\', '/'))
                 ?.ToList();
             if (externalFiles?.Count == 0)
