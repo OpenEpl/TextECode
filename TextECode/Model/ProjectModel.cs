@@ -87,6 +87,9 @@ namespace OpenEpl.TextECode.Model
 
         public List<DependencyModel> Dependencies { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public List<string> ExternalFiles { get; set; }
+
         [JsonExtensionData]
         public IDictionary<string, JToken> ExtensionData { get; set; }
     }

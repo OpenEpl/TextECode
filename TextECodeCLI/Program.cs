@@ -44,10 +44,8 @@ namespace OpenEpl.TextECodeCLI
             {
                 Output = Path.ChangeExtension(Input, ".eproject");
             }
-            var generator = new TextECodeGenerator(loggerFactory, doc, Output, new EComSearcher(new string[]
-            {
-                    Path.GetDirectoryName(Path.GetFullPath(Input))
-            }));
+            var originDir = Path.GetDirectoryName(Path.GetFullPath(Input));
+            var generator = new TextECodeGenerator(loggerFactory, doc, Output, new EComSearcher(new string[] { originDir }), originDir);
             if (!string.IsNullOrEmpty(SourceSet))
             {
                 generator.SetSourceSet(SourceSet);
@@ -155,11 +153,8 @@ namespace OpenEpl.TextECodeCLI
                     {
                         stopWatchForSync.Restart();
                         doc.Load(file);
-                        var ecDirs = new string[]
-                        {
-                            Path.GetDirectoryName(binProjectPath)
-                        };
-                        var generator = new TextECodeGenerator(loggerFactory, doc, ProjectFile, new EComSearcher(ecDirs));
+                        var originDir = Path.GetDirectoryName(binProjectPath);
+                        var generator = new TextECodeGenerator(loggerFactory, doc, ProjectFile, new EComSearcher(new string[] { originDir }), originDir);
                         generator.Generate();
                         generator.DeleteNonGeneratedFiles();
                         stopWatchForSync.Stop();

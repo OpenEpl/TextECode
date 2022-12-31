@@ -33,6 +33,7 @@ namespace OpenEpl.TextECode
         private readonly ECDependenciesSection ECDependencies;
         private readonly FolderSection Folder;
         private readonly ClassPublicitySection ClassPublicity;
+        private readonly ProjectConfigExSection ProjectConfigEx;
         private readonly Dictionary<int, MethodInfo> MethodIdMap;
         private readonly Dictionary<int, ClassInfo> ClassIdMap;
         private readonly Dictionary<int, DllDeclareInfo> DllIdMap;
@@ -47,6 +48,7 @@ namespace OpenEpl.TextECode
         public string WorkingDir { get; }
         public string ProjectFilePath { get; }
         private string SrcBasePath;
+        private string ExternalFilesDir;
         private string ProgramOutFile;
         private string IconPath;
         private readonly HashSet<int> handledIds = new();
@@ -59,7 +61,7 @@ namespace OpenEpl.TextECode
         public IEComSearcher EComSearcher { get; }
         public HashSet<string> GeneratedPaths { get; } = new();
 
-        public TextECodeGenerator(ILoggerFactory loggerFactory, EplDocument doc, string projectFilePath, IEComSearcher ecomSearcher)
+        public TextECodeGenerator(ILoggerFactory loggerFactory, EplDocument doc, string projectFilePath, IEComSearcher ecomSearcher, string externalFilesDir)
         {
             this.LoggerFactory = loggerFactory;
             this.logger = loggerFactory.CreateLogger<TextECodeGenerator>();
@@ -72,6 +74,7 @@ namespace OpenEpl.TextECode
             this.ECDependencies = doc.GetOrNull(ECDependenciesSection.Key);
             this.Folder = doc.GetOrNull(FolderSection.Key);
             this.ClassPublicity = doc.GetOrNull(ClassPublicitySection.Key);
+            this.ProjectConfigEx = doc.GetOrNull(ProjectConfigExSection.Key);
             this.MethodIdMap = Code.Methods.ToDictionary(x => x.Id);
             this.ClassIdMap = Code.Classes.ToDictionary(x => x.Id);
             this.DllIdMap = Code.DllDeclares.ToDictionary(x => x.Id);
@@ -85,6 +88,7 @@ namespace OpenEpl.TextECode
             this.ProjectFilePath = Path.GetFullPath(projectFilePath);
             this.WorkingDir = Path.GetDirectoryName(this.ProjectFilePath);
             this.SrcBasePath = Path.Combine(WorkingDir, "src");
+            this.ExternalFilesDir = externalFilesDir;
             if (File.Exists(ProjectFilePath))
             {
                 try
@@ -123,7 +127,7 @@ namespace OpenEpl.TextECode
             }
         }
         public TextECodeGenerator(ILoggerFactory loggerFactory, EplDocument doc, string projectFilePath)
-            : this(loggerFactory, doc, projectFilePath, TextECode.EComSearcher.Default)
+            : this(loggerFactory, doc, projectFilePath, TextECode.EComSearcher.Default, null)
         {
 
         }
@@ -260,6 +264,15 @@ namespace OpenEpl.TextECode
                 }));
             }
             projectModel.Dependencies = dependencies.ToList();
+            List<string> externalFiles = ProjectConfigEx?.ExternalFilePaths
+                ?.Select(x => Path.GetFullPath(x, ExternalFilesDir))
+                ?.Select(x => Path.GetRelativePath(WorkingDir, x).Replace('\\', '/'))
+                ?.ToList();
+            if (externalFiles?.Count == 0)
+            {
+                externalFiles = null;
+            }
+            projectModel.ExternalFiles = externalFiles;
             using var writer = new JsonTextWriter(new StreamWriter(File.Open(ProjectFilePath, FileMode.Create), Encoding.UTF8));
             JsonSerializer.Create(new JsonSerializerSettings() { 
                 Formatting = Formatting.Indented

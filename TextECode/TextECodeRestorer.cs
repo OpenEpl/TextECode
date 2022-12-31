@@ -387,7 +387,25 @@ namespace OpenEpl.TextECode
                 doc.Sections.Add(Folder);
             }
 
+            var projectConfigEx = TryGenerateProjectConfigExSection(projectModel);
+            if (projectConfigEx != null)
+            {
+                doc.Sections.Add(projectConfigEx);
+            }
+
             return doc;
+        }
+
+        private ProjectConfigExSection TryGenerateProjectConfigExSection(ProjectModel projectModel)
+        {
+            if ((projectModel.ExternalFiles?.Count).GetValueOrDefault() != 0)
+            {
+                return new ProjectConfigExSection()
+                {
+                    ExternalFilePaths = projectModel.ExternalFiles.Select(x => Path.GetFullPath(x, WorkingPath)).ToList()
+                };
+            }
+            return null;
         }
 
         private EplParser.StartContext ParseAsAST(string content, string fileId)
