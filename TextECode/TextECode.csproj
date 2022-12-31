@@ -8,6 +8,7 @@
     <AssemblyName>OpenEpl.TextECode</AssemblyName>
     <PackageId>OpenEpl.TextECode</PackageId>
     <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
+    <RollForward>Major</RollForward>
   </PropertyGroup>
 
   <ItemGroup>
