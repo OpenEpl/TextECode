@@ -5,8 +5,12 @@ using QIQI.EProjectFile;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OpenEpl.TextECodeCLI
 {
@@ -210,6 +214,7 @@ namespace OpenEpl.TextECodeCLI
 
     internal class Program
     {
+        static readonly HttpClient client = new();
         private static int Main(string[] args)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -222,7 +227,9 @@ namespace OpenEpl.TextECodeCLI
                 });
             });
 
-            return new Parser(x =>
+            var preparedVersionChecker = PrepareVersionChecker();
+
+            var exitCode = new Parser(x =>
             {
                 x.CaseSensitive = false;
                 x.CaseInsensitiveEnumValues = true;
@@ -231,6 +238,56 @@ namespace OpenEpl.TextECodeCLI
               .MapResult(
                 options => (options as ICmd)?.Run(loggerFactory) ?? 1,
                 _ => 1);
+
+            RunVersionChecker(preparedVersionChecker, loggerFactory.CreateLogger("VersionChecker"));
+
+            return exitCode;
+        }
+
+        private static Task<JsonDocument> PrepareVersionChecker()
+        {
+            return Task.Run(async () =>
+            {
+                var informationalVersionInfo = Attribute.GetCustomAttribute(typeof(TextECodeGenerator).Assembly, typeof(AssemblyInformationalVersionAttribute))
+                    as AssemblyInformationalVersionAttribute;
+                using var request = new HttpRequestMessage()
+                {
+                    RequestUri = new Uri("https://api.github.com/repos/OpenEpl/TextECode/releases/latest"),
+                    Method = HttpMethod.Get,
+                };
+                request.Headers.UserAgent.ParseAdd("OpenEpl/" + (informationalVersionInfo?.InformationalVersion ?? "Unknown"));
+                request.Headers.Accept.ParseAdd("application/vnd.github+json");
+                request.Headers.Add("X-GitHub-Api-Version", "2022-11-28");
+                using var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                return JsonDocument.Parse(await response.Content.ReadAsStreamAsync());
+            });
+        }
+
+        private static void RunVersionChecker(Task<JsonDocument> preparedVersionChecker, ILogger logger)
+        {
+            try
+            {
+                var informationalVersionInfo = Attribute.GetCustomAttribute(typeof(TextECodeGenerator).Assembly, typeof(AssemblyInformationalVersionAttribute))
+                    as AssemblyInformationalVersionAttribute;
+                var currentVersionString = informationalVersionInfo?.InformationalVersion ?? "1.0.0";
+                if (currentVersionString.Contains('+'))
+                {
+                    currentVersionString = currentVersionString.Substring(0, currentVersionString.IndexOf('+'));
+                }
+                var currentVersion = Version.Parse(currentVersionString);
+                var latestRelease = preparedVersionChecker.GetAwaiter().GetResult();
+                var tagName = latestRelease.RootElement.GetProperty("tag_name").GetString();
+                var releaseHtmlUrl = latestRelease.RootElement.GetProperty("html_url").GetString();
+                if (tagName.StartsWith("v") && Version.Parse(tagName[1..]) > currentVersion)
+                {
+                    logger.LogInformation("New version detected: {TagName}, see {ReleaseHtmlUrl} for more information", tagName, releaseHtmlUrl);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "Failed to check version");
+            }
         }
     }
 }
