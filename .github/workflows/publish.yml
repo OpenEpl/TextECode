@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v1
 
       - name: Setup Java
         uses: actions/setup-java@v3
@@ -27,7 +27,7 @@ jobs:
 
       - name: Get version from tag
         id: get-version
-        run: echo ("::set-output name=version::" + $env:GITHUB_REF.replace('refs/tags/v', ''))
+        run: echo ("version=" + $env:GITHUB_REF.replace('refs/tags/v', '')) >> $env:GITHUB_OUTPUT
 
       - name: Install cert
         shell: pwsh
@@ -83,7 +83,7 @@ jobs:
           Compress-Archive -Path ".\TextECodeCLI\publish\TextECode_${{ steps.get-version.outputs.version }}_SelfContained_x86" -DestinationPath "${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_SelfContained_x86.zip"
 
       - name: Release (GitHub)
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v0.1.13
         with:
           files: |
             ${{ runner.temp }}\TextECode_${{ steps.get-version.outputs.version }}_Appx.zip
