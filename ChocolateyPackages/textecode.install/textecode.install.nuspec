@@ -18,6 +18,7 @@
     <tags>epl text ecode</tags>
     <summary>A tool to help EPL work with plain text codes</summary>
     <description>A tool to help EPL work with plain text codes</description>
+    <releaseNotes>See https://github.com/OpenEpl/TextECode/releases for details</releaseNotes>
     <dependencies>
       <dependency id="dotnetcore-3.1-desktopruntime" version="3.1.0" />
     </dependencies>
