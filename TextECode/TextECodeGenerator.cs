@@ -437,7 +437,7 @@ namespace OpenEpl.TextECode
                 return;
             }
             using var stream = CreateEFormFile(folderInfo, elem.Name);
-            new FormInfoGenerator(elem, IdToNameMap).Save(stream);
+            new FormInfoGenerator(elem, Code.Libraries, IdToNameMap, LoggerFactory).Save(stream);
         }
 
         private void HandleClass(CodeFolderInfo folderInfo, ClassInfo elem)

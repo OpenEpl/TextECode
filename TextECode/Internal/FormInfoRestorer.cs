@@ -80,10 +80,29 @@ namespace OpenEpl.TextECode.Internal
 
         public int HandleControl(XmlElement xmlElem, int parentId)
         {
-            var dataTypeElem = (BaseDataTypeElem)P.TopLevelScope[ProgramElemName.Type(xmlElem.Name)];
+            P.TopLevelScope.TryGetValue(ProgramElemName.Type(xmlElem.Name), out var elem);
+            int dataTypeId;
+            if (elem is BaseDataTypeElem dataTypeElem)
+            {
+                dataTypeId = dataTypeElem.Id;
+            }
+            else
+            {
+                var nameGroup = xmlElem.Name.Split('.');
+                if (nameGroup.Length != 3 && nameGroup[0] != "未知类型")
+                {
+                    throw new Exception($"未知的窗口数据类型: {xmlElem.Name}");
+                }
+                var libId = P.libraryRefInfos.FindIndex(x => x.Name == nameGroup[1]);
+                if (libId == -1)
+                {
+                    throw new Exception($"未知的窗口数据类型: {nameGroup[1]}.{nameGroup[2]}");
+                }
+                dataTypeId = EplSystemId.MakeLibDataTypeId(checked((short)libId), short.Parse(nameGroup[2]));
+            }
             var control = new FormControlInfo(P.AllocId(EplSystemId.Type_FormControl))
             {
-                DataType = dataTypeElem.Id,
+                DataType = dataTypeId,
                 Name = xmlElem.GetAttribute("名称"),
                 Comment = xmlElem.GetAttribute("备注"),
                 Parent = parentId,

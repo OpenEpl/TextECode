@@ -32,8 +32,11 @@ namespace OpenEpl.TextECode.Internal.ProgramElems.User
                 if (!string.IsNullOrEmpty(item.Name))
                 {
                     EplSystemId.DecomposeLibDataTypeId(item.DataType, out var lib, out var type);
-                    var dataType = P.LibDataTypes[lib][type];
-                    scope.Add(ProgramElemName.Var(item.Name), new UserFormElement(P, item.Name, formInfo.Id, item.Id, dataType));
+                    var dataType = P.LibDataTypes.ElementAtOrDefault(lib)?.ElementAtOrDefault(type);
+                    if (dataType != null)
+                    {
+                        scope.Add(ProgramElemName.Var(item.Name), new UserFormElement(P, item.Name, formInfo.Id, item.Id, dataType));
+                    }
                 }
             }
             var krnlnLib = P.ELibs[0];

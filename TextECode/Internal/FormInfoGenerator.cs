@@ -1,4 +1,5 @@
-﻿using OpenEpl.ELibInfo;
+﻿using Microsoft.Extensions.Logging;
+using OpenEpl.ELibInfo;
 using QIQI.EProjectFile;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,9 @@ namespace OpenEpl.TextECode.Internal
     {
         private readonly XmlDocument doc = new();
 
-        public FormInfoGenerator(FormInfo formInfo, IdToNameMap idToNameMap)
+        public FormInfoGenerator(FormInfo formInfo, LibraryRefInfo[] libraryRefInfo, IdToNameMap idToNameMap, ILoggerFactory factory)
         {
+            var logger = factory.CreateLogger<FormInfoGenerator>();
             var xmlDeclaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
             doc.InsertBefore(xmlDeclaration, doc.DocumentElement);
             var formXmlElem = doc.CreateElement("窗口");
@@ -58,15 +60,40 @@ namespace OpenEpl.TextECode.Internal
                 foreach (var item in items.Select(x => controlIdMap[x]))
                 {
                     EplSystemId.DecomposeLibDataTypeId(item.DataType, out var lib, out var type);
-                    var dataTypeInfo = idToNameMap.LibDefinedName[lib].DataTypes[type];
-                    var itemXmlElem = doc.CreateElement(dataTypeInfo.Name);
+                    var dataTypeInfo = idToNameMap.LibDefinedName.ElementAtOrDefault(lib)
+                        ?.DataTypes.ElementAtOrDefault(type);
+                    var itemXmlElemName = dataTypeInfo?.Name;
+                    if (itemXmlElemName is null)
+                    {
+                        logger.LogError("未知的窗口数据类型: {0}.{1}", libraryRefInfo[lib].Name, type);
+                        itemXmlElemName = $"未知类型.{libraryRefInfo[lib].Name}.{type}";
+                    }
+                    var itemXmlElem = doc.CreateElement(itemXmlElemName);
                     itemXmlElem.SetAttribute("名称", idToNameMap.GetUserDefinedName(item.Id));
                     if (!string.IsNullOrEmpty(formInfo.Comment))
                     {
                         itemXmlElem.SetAttribute("备注", item.Comment);
                     }
                     parentXmlElem.AppendChild(itemXmlElem);
-                    if (dataTypeInfo is ELibComponentInfo componentInfo && componentInfo.IsTabControl)
+                    bool isTabControl;
+                    if (dataTypeInfo is null)
+                    {
+                        // fallback
+                        isTabControl = item.Children.Contains(0);
+                        if (isTabControl)
+                        {
+                            logger.LogWarning("未知的数据类型: {0}.{1}，判定为Tab容器类型", libraryRefInfo[lib].Name, type);
+                        }
+                        else if (item.Children.Length != 0)
+                        {
+                            logger.LogWarning("未知的数据类型: {0}.{1}，判定为普通容器类型", libraryRefInfo[lib].Name, type);
+                        }
+                    }
+                    else
+                    {
+                        isTabControl = dataTypeInfo is ELibComponentInfo componentInfo && componentInfo.IsTabControl;
+                    }
+                    if (isTabControl)
                     {
                         var currentTabXmlElem = doc.CreateElement($"{itemXmlElem.Name}.子夹");
                         var currentTabChildren = new List<int>();

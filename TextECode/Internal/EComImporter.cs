@@ -43,7 +43,7 @@ namespace OpenEpl.TextECode.Internal
             ecProjectConfig = ecDoc.Get(ProjectConfigSection.Key);
             ecClassPublicity = ecDoc.GetOrNull(ClassPublicitySection.Key);
             ecPublicClassIds = new HashSet<int>();
-            ecLibIdMap = ecCode.Libraries.Select(x => P.ELibIndexMap[Guid.Parse(x.GuidString)]).ToArray();
+            ecLibIdMap = ecCode.Libraries.Select(x => P.ELibIndexMap[GuidUtils.ParseGuidLosely(x.GuidString)]).ToArray();
             ecMethodMap = ecCode.Methods.ToDictionary(x => x.Id);
             ecClassMap = ecCode.Classes.ToDictionary(x => x.Id);
             structPairs = new List<(StructInfo dest, StructInfo src, Scope<ProgramElemName, ProgramElem> scope)>();

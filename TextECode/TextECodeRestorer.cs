@@ -177,7 +177,7 @@ namespace OpenEpl.TextECode
                     Version = x.Version
                 })
                 .Concat(ecoms.Where(x => x.doc != null).SelectMany(x => x.doc.Get(CodeSection.Key).Libraries))
-                .GroupBy(x => Guid.Parse(x.GuidString))
+                .GroupBy(x => GuidUtils.ParseGuidLosely(x.GuidString))
                 .Select(g =>
                 {
                     return new LibraryRefInfo()
@@ -194,8 +194,8 @@ namespace OpenEpl.TextECode
 
             {
                 var iKrnlnLib = libraryRefInfos.FindIndex(x => string.Equals(
-                    x.GuidString, 
-                    "d09f2340818511d396f6aaf844c7e325", 
+                    x.GuidString,
+                    "d09f2340818511d396f6aaf844c7e325",
                     StringComparison.InvariantCultureIgnoreCase));
                 if (iKrnlnLib == -1)
                 {
@@ -216,15 +216,15 @@ namespace OpenEpl.TextECode
             ELibIndexMap = new();
             for (int iLib = 0; iLib < libraryRefInfos.Count; iLib++)
             {
-                ELibIndexMap.Add(Guid.Parse(libraryRefInfos[iLib].GuidString), iLib);
+                ELibIndexMap.Add(GuidUtils.ParseGuidLosely(libraryRefInfos[iLib].GuidString), iLib);
             }
 
             ELibs = libraryRefInfos
-                .Select(x => 
+                .Select(x =>
                 {
                     try
                     {
-                        return ELibInfoLoader.Default.Load(Guid.Parse(x.GuidString), x.FileName, x.Version);
+                        return ELibInfoLoader.Default.Load(GuidUtils.ParseGuidLosely(x.GuidString), x.FileName, x.Version);
                     }
                     catch (Exception e)
                     {
