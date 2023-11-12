@@ -29,7 +29,7 @@
     </PackageReference>
     <PackageReference Include="Mime-Detective" Version="22.7.21" />
     <PackageReference Include="Mime-Detective.Definitions.Condensed" Version="22.7.21" />
-    <PackageReference Include="QIQI.EProjectFile" Version="1.9.1">
+    <PackageReference Include="QIQI.EProjectFile" Version="1.9.2">
       <PrivateAssets>build; analyzers</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
