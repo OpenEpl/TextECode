@@ -48,7 +48,7 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateThumbprint>463695EBCD5558B35E855DD66066A033D622CDAD</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>40F78386D04B536D507BB4744D4A90F31241B4C9</PackageCertificateThumbprint>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <ItemGroup>
