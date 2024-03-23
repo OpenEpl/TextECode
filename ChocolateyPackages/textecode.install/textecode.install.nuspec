@@ -20,7 +20,7 @@
     <description>A tool to help EPL work with plain text codes</description>
     <releaseNotes>See https://github.com/OpenEpl/TextECode/releases for details</releaseNotes>
     <dependencies>
-      <dependency id="dotnetcore-3.1-desktopruntime" version="3.1.0" />
+      <dependency id="dotnet-6.0-desktopruntime" version="6.0.0" />
     </dependencies>
   </metadata>
   <files>

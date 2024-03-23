@@ -38,7 +38,7 @@ namespace TextECodeContextMenu
                 };
                 startInfo.ArgumentList.Add("restore");
                 startInfo.ArgumentList.Add(item);
-                using var process = Process.Start(startInfo);
+                using var process = Process.Start(startInfo) ?? throw new InvalidOperationException("Failed to start TextECode.exe");
                 process.WaitForExit();
             }
         }

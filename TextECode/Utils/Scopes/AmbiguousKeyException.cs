@@ -10,8 +10,5 @@ namespace OpenEpl.TextECode.Utils.Scopes
         public AmbiguousKeyException() { }
         public AmbiguousKeyException(string message) : base(message) { }
         public AmbiguousKeyException(string message, Exception inner) : base(message, inner) { }
-        protected AmbiguousKeyException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

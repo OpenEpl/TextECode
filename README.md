@@ -11,7 +11,11 @@ msbuild "TextECode.sln" /p:Configuration=Release;Version=0.0.1
 ```
 
 ## 安装
-所有用户均需要先 [安装 .NET 桌面运行时 3.1](https://dotnet.microsoft.com/zh-cn/download/dotnet/3.1) 才可使用本工具  
+所有用户均需要先 [安装 .NET 桌面运行时 6.0](https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0) 才可使用本工具，新版 Windows 用户可以使用 `winget` 包管理器安装框架：
+```ps1
+winget install Microsoft.DotNet.DesktopRuntime.6
+```
+
 用户应安装易语言环境，且保证注册表信息正确，以便本工具能够正确读取本地的支持库信息  
 
 Win10及以上用户可以使用 Appx 包安装（从 Releases 下载或者自行编译），由于本项目既没有上架 Microsoft Store 也没有购买可信第三方的证书，因此在安装前您**需要信任我们的自签名证书**。  
