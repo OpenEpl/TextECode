@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using QIQI.EProjectFile;
 using QIQI.EProjectFile.Sections;
 using QIQI.EProjectFile.Expressions;
@@ -135,8 +135,8 @@ namespace OpenEpl.TextECode
                 ECDependencies = new()
             };
 
-            using var reader = new JsonTextReader(new StreamReader(File.Open(ProjectFilePath, FileMode.Open), Encoding.UTF8));
-            var projectModel = JsonSerializer.Create().Deserialize<ProjectModel>(reader);
+            using var stream = File.OpenRead(ProjectFilePath);
+            var projectModel = JsonSerializer.Deserialize<ProjectModel>(stream);
             SrcBasePath = Path.Combine(WorkingPath, projectModel.SourceSet);
             var srcBase = new DirectoryInfo(SrcBasePath);
 
@@ -553,7 +553,7 @@ namespace OpenEpl.TextECode
                 ESystemVersion = new Version(5, 7),
                 FileType = 1,
                 ProjectType = (int)projectModel.ProjectType,
-                Language = (int)projectModel.Language
+                Language = (int)(projectModel.Language ?? EplLanguage.GBK),
             };
         }
 
@@ -572,7 +572,7 @@ namespace OpenEpl.TextECode
                 Homepage = projectModel.Homepage,
                 Copyright = projectModel.Copyright,
                 Version = projectModel.Version,
-                WriteVersion = projectModel.WriteVersion,
+                WriteVersion = projectModel.WriteVersion ?? true,
                 CompilePlugins = projectModel.CompilePlugins ?? string.Empty,
                 ExportPublicClassMethod = projectModel.ExportPublicClassMethod,
             };

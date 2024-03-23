@@ -1,24 +1,13 @@
-﻿using JsonSubTypes;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace OpenEpl.TextECode.Model
 {
-    public enum DependencyModelKind
-    {
-        ELib,
-        ECom
-    }
-    [JsonConverter(typeof(JsonSubtypes), "Kind")]
-    [JsonSubtypes.KnownSubType(typeof(ELib), DependencyModelKind.ELib)]
-    [JsonSubtypes.KnownSubType(typeof(ECom), DependencyModelKind.ECom)]
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "Kind")]
+    [JsonDerivedType(typeof(ELib), "ELib")]
+    [JsonDerivedType(typeof(ECom), "ECom")]
     public class DependencyModel
     {
-        [JsonConverter(typeof(StringEnumConverter))]
-        public virtual DependencyModelKind Kind { get; }
         public class ELib : DependencyModel
         {
             public ELib(string name, string fileName, string guid, Version version)
@@ -29,7 +18,6 @@ namespace OpenEpl.TextECode.Model
                 Version = version ?? throw new ArgumentNullException(nameof(version));
             }
 
-            public override DependencyModelKind Kind => DependencyModelKind.ELib;
             public string Name { get; }
             public string FileName { get; }
             /// <summary>
@@ -47,7 +35,6 @@ namespace OpenEpl.TextECode.Model
                 ReExport = reExport;
             }
 
-            public override DependencyModelKind Kind => DependencyModelKind.ECom;
             public string Name { get; }
             public string Path { get; }
             public bool ReExport { get; }

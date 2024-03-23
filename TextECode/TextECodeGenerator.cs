@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using MimeDetective;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OpenEpl.TextECode.Internal;
 using OpenEpl.TextECode.Model;
 using QIQI.EProjectFile;
@@ -12,6 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 
 namespace OpenEpl.TextECode
 {
@@ -44,7 +44,7 @@ namespace OpenEpl.TextECode
         private readonly Dictionary<int, CodeFolderInfo> FolderKeyMap;
         private readonly Dictionary<int, FormInfo> FormClassMap;
         private readonly IdToNameMap IdToNameMap;
-        public IDictionary<string, JToken> ExtensionData { get; set; }
+        public IDictionary<string, JsonElement> ExtensionData { get; set; }
         public string WorkingDir { get; }
         public string ProjectFilePath { get; }
         private string SrcBasePath;
@@ -93,8 +93,8 @@ namespace OpenEpl.TextECode
             {
                 try
                 {
-                    using var reader = new JsonTextReader(new StreamReader(File.Open(ProjectFilePath, FileMode.Open), Encoding.UTF8));
-                    var projectModel = JsonSerializer.Create().Deserialize<ProjectModel>(reader);
+                    using var stream = File.Open(ProjectFilePath, FileMode.Open);
+                    var projectModel = JsonSerializer.Deserialize<ProjectModel>(stream);
                     this.SrcBasePath = Path.GetFullPath(projectModel.SourceSet, WorkingDir);
                     if (!string.IsNullOrEmpty(projectModel.OutFile))
                     {
@@ -223,7 +223,7 @@ namespace OpenEpl.TextECode
             {
                 Name = ProjectConfig.Name,
                 ProjectType = (EplProjectType)System.ProjectType,
-                Language = (EplLanguage)System.Language,
+                Language = System.Language == 1 ? null : (EplLanguage)System.Language,
                 Description = ProjectConfig.Description.NullIfEmpty(),
                 Icon = HasIcon() ? (string.IsNullOrEmpty(IconPath) ? "Icon.ico" : Path.GetRelativePath(WorkingDir, IconPath)) : null,
                 Author = ProjectConfig.Author.NullIfEmpty(),
@@ -235,7 +235,7 @@ namespace OpenEpl.TextECode
                 Homepage = ProjectConfig.Homepage.NullIfEmpty(),
                 Copyright = ProjectConfig.Copyright.NullIfEmpty(),
                 Version = ProjectConfig.Version,
-                WriteVersion = ProjectConfig.WriteVersion,
+                WriteVersion = ProjectConfig.WriteVersion ? null : false,
                 CompilePlugins = ProjectConfig.CompilePlugins.NullIfEmpty(),
                 ExportPublicClassMethod = ProjectConfig.ExportPublicClassMethod,
                 SourceSet = Path.GetRelativePath(WorkingDir, SrcBasePath),
@@ -273,10 +273,12 @@ namespace OpenEpl.TextECode
                 externalFiles = null;
             }
             projectModel.ExternalFiles = externalFiles;
-            using var writer = new JsonTextWriter(new StreamWriter(File.Open(ProjectFilePath, FileMode.Create), Encoding.UTF8));
-            JsonSerializer.Create(new JsonSerializerSettings() { 
-                Formatting = Formatting.Indented
-            }).Serialize(writer, projectModel);
+            using var stream = File.Open(ProjectFilePath, FileMode.Create);
+            using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions() { 
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                Indented = true 
+            });
+            JsonSerializer.Serialize(writer, projectModel);
         }
 
         private bool HasIcon()
