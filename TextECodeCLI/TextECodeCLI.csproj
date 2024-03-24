@@ -9,6 +9,7 @@
     <AssemblyName>TextECode</AssemblyName>
     <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
     <RollForward>Major</RollForward>
+    <ApplicationIcon>../AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
