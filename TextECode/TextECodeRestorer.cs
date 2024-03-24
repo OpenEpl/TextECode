@@ -28,6 +28,7 @@ using System.Threading;
 using OpenEpl.TextECode.Internal.ProgramElems;
 using OpenEpl.TextECode.Internal;
 using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
 
 namespace OpenEpl.TextECode
 {
@@ -35,6 +36,7 @@ namespace OpenEpl.TextECode
     {
         public ILoggerFactory LoggerFactory { get; }
         public string ProjectFilePath { get; }
+        public string OrderFilePath { get; }
         public string WorkingPath { get; }
         public IEComSearcher EComSearcher { get; }
 
@@ -81,6 +83,7 @@ namespace OpenEpl.TextECode
             logger = loggerFactory.CreateLogger<TextECodeRestorer>();
             translatorLogger = loggerFactory.CreateLogger<CodeTranslatorContext>();
             ProjectFilePath = Path.GetFullPath(projectFilePath);
+            OrderFilePath = this.ProjectFilePath + ".order";
             WorkingPath = Path.GetDirectoryName(ProjectFilePath);
             EComSearcher = ecomSearcher;
             SystemDataTypes = new(this);
@@ -135,8 +138,24 @@ namespace OpenEpl.TextECode
                 ECDependencies = new()
             };
 
-            using var stream = File.OpenRead(ProjectFilePath);
-            var projectModel = JsonSerializer.Deserialize<ProjectModel>(stream);
+            ProjectModel projectModel;
+            using (var stream = File.OpenRead(ProjectFilePath))
+            {
+                projectModel = JsonSerializer.Deserialize<ProjectModel>(stream);
+            }
+            OrderModel orderModel = null;
+            if (File.Exists(OrderFilePath))
+            {
+                try
+                {
+                    using var stream = File.OpenRead(OrderFilePath);
+                    orderModel = JsonSerializer.Deserialize<OrderModel>(stream);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "读取排序文件 {OrderFilePath} 失败", OrderFilePath);
+                }
+            }
             SrcBasePath = Path.Combine(WorkingPath, projectModel.SourceSet);
             var srcBase = new DirectoryInfo(SrcBasePath);
 
@@ -323,7 +342,7 @@ namespace OpenEpl.TextECode
                     AstMap[x.path] = ParseAsAST(x.content, Path.GetRelativePath(SrcBasePath, x.path));
                 });
             }
-            HandleFolder(srcBase, 0);
+            HandleFolder(srcBase, 0, orderModel?.Items?.AsReadOnly());
             AstMap = null;
 
             // Stage: DefineForm
@@ -346,10 +365,10 @@ namespace OpenEpl.TextECode
                     classGraph.AddVertex(item);
                 }
             }
-            var sortedClasses = classGraph.TopologicalSort();
+            var topologicalSortedClasses = classGraph.TopologicalSort();
 
             // Stage: DefineAll
-            foreach (var item in sortedClasses) item.DefineAll();
+            foreach (var item in topologicalSortedClasses) item.DefineAll();
             foreach (var item in Structs) item.DefineAll();
             foreach (var item in GlobalVariables) item.DefineAll();
             foreach (var item in DllDeclares) item.DefineAll();
@@ -357,7 +376,7 @@ namespace OpenEpl.TextECode
             // Stage: Finish
             foreach (var item in Constants) item.Finish();
             foreach (var item in Structs) item.Finish();
-            foreach (var item in sortedClasses) item.Finish();
+            foreach (var item in Classes) item.Finish(); // Finish is not called with topological order. We keep the original order.
             foreach (var item in GlobalVariables) item.Finish();
             foreach (var item in DllDeclares) item.Finish();
             foreach (var item in Forms) item.Finish();
@@ -578,15 +597,22 @@ namespace OpenEpl.TextECode
             };
         }
 
-        private List<int> HandleFolder(DirectoryInfo directory, int folderId)
+        private List<int> HandleFolder(DirectoryInfo directory, int folderId, ReadOnlyCollection<OrderItem> orderItems)
         {
             var ids = new List<int>();
-            foreach (var item in directory.EnumerateDirectories())
+
+            var subFolderOrderMap = orderItems
+                ?.OfType<OrderItem.Folder>()
+                ?.Select((info, index) => (info, index))
+                ?.ToDictionary(x => x.info.Name);
+
+            var subFolders = directory.EnumerateDirectories().Where(x => !x.Name.StartsWith("@")).ToList();
+            subFolders.Sort(new ComparerWithPriority<DirectoryInfo>(
+                               x => subFolderOrderMap?.TryGetValue(x.Name, out var orderInfo) == true ? orderInfo.index : int.MaxValue,
+                               (a, b) => a.Name.CompareTo(b.Name)));
+
+            foreach (var item in subFolders)
             {
-                if (item.Name.StartsWith("@"))
-                {
-                    continue;
-                }
                 var subFolderId = Folder.AllocKey();
                 var subFolder = new CodeFolderInfo(subFolderId)
                 {
@@ -595,10 +621,31 @@ namespace OpenEpl.TextECode
                     Expand = true
                 };
                 Folder.Folders.Add(subFolder);
-                var subIds = HandleFolder(item, subFolderId);
+                ReadOnlyCollection<OrderItem> subOrderItem = null;
+                if (subFolderOrderMap?.TryGetValue(item.Name, out var orderInfo) == true)
+                {
+                    subOrderItem = orderInfo.info?.Items?.AsReadOnly();
+                }
+                var subIds = HandleFolder(item, subFolderId, subOrderItem);
                 subFolder.Children = subIds.ToArray();
             }
-            foreach (var item in directory.EnumerateFiles("*.eform"))
+
+            var itemsOrderMap = orderItems
+                ?.OfType<OrderItem.Elem>()
+                ?.Select((info, index) => (info, index))
+                ?.ToDictionary(x => x.info.Name);
+
+            var formItems = directory.EnumerateFiles("*.eform").ToList();
+            formItems.Sort(new ComparerWithPriority<FileInfo>(
+                                   x => itemsOrderMap?.TryGetValue(Path.ChangeExtension(x.Name, null), out var orderInfo) == true ? orderInfo.index : int.MaxValue,
+                                   (a, b) => a.Name.CompareTo(b.Name)));
+
+            var itemsInFolder = directory.EnumerateFiles("*.ecode").ToList();
+            itemsInFolder.Sort(new ComparerWithPriority<FileInfo>(
+                                   x => itemsOrderMap?.TryGetValue(Path.ChangeExtension(x.Name, null), out var orderInfo) == true ? orderInfo.index : int.MaxValue,
+                                   (a, b) => a.Name.CompareTo(b.Name)));
+
+            foreach (var item in formItems)
             {
                 var formInfoRestorer = new FormInfoRestorer(this);
                 using (var stream = item.OpenRead())
@@ -608,7 +655,7 @@ namespace OpenEpl.TextECode
                 var restoredForm = formInfoRestorer.Restore();
                 ids.Add(restoredForm.Id);
             }
-            foreach (var item in directory.EnumerateFiles("*.ecode"))
+            foreach (var item in itemsInFolder)
             {
                 HandleECodeFile(ids, item);
             }

@@ -52,7 +52,10 @@ namespace OpenEpl.TextECode.Internal.ProgramElems.User
 
             return type;
         }
-
+        
+        /// <remarks>
+        /// This method is called with topological order.
+        /// </remarks>
         public void AssociateBase()
         {
             if (Tree.@base != null)
@@ -77,16 +80,23 @@ namespace OpenEpl.TextECode.Internal.ProgramElems.User
             }
         }
 
+        /// <remarks>
+        /// This method is called with topological order.
+        /// </remarks>
         public void DefineAll()
         {
             SelfMemberScope = new();
             PrivateScope = new();
-            if (Base?.ScopeFromOuter != null && Base.ScopeFromOuter is not EmptyScope<ProgramElemName, ProgramElem>)
+            if (Base?.ScopeFromOuter is not null && Base.ScopeFromOuter is not EmptyScope<ProgramElemName, ProgramElem>)
             {
                 _scopeFromOuter = new InheritedScope<ProgramElemName, ProgramElem>(SelfMemberScope, Base.ScopeFromOuter);
             }
             else
             {
+                if (Base is not null && Base.ScopeFromOuter is null)
+                {
+                    P.translatorLogger.LogWarning("无法为 {Name} 关联基类的成员", Name);
+                }
                 _scopeFromOuter = SelfMemberScope;
             }
             if (FormDataType != null)
@@ -141,6 +151,9 @@ namespace OpenEpl.TextECode.Internal.ProgramElems.User
             }
         }
 
+        /// <remarks>
+        /// Finish is not called with topological order. We keep the original order.
+        /// </remarks>
         public void Finish()
         {
             using (P.translatorLogger.BeginScope($"所在类模块：{Name}"))

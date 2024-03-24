@@ -47,6 +47,8 @@ namespace OpenEpl.TextECode
         public IDictionary<string, JsonElement> ExtensionData { get; set; }
         public string WorkingDir { get; }
         public string ProjectFilePath { get; }
+        public string OrderFilePath { get; }
+
         private string SrcBasePath;
         private string ExternalFilesDir;
         private string ProgramOutFile;
@@ -60,6 +62,9 @@ namespace OpenEpl.TextECode
         private readonly ILogger<TextECodeGenerator> logger;
         public IEComSearcher EComSearcher { get; }
         public HashSet<string> GeneratedPaths { get; } = new();
+
+        private OrderModel OrderModel = new();
+        private Dictionary<int, OrderItem.Folder> FolderOrderMap = new();
 
         public TextECodeGenerator(ILoggerFactory loggerFactory, EplDocument doc, string projectFilePath, IEComSearcher ecomSearcher, string externalFilesDir)
         {
@@ -86,6 +91,7 @@ namespace OpenEpl.TextECode
             this.FormClassMap = Resource.Forms.Where(x => x.Class != 0).ToDictionary(x => x.Class);
             this.IdToNameMap = new IdToNameMap(doc);
             this.ProjectFilePath = Path.GetFullPath(projectFilePath);
+            this.OrderFilePath = this.ProjectFilePath + ".order";
             this.WorkingDir = Path.GetDirectoryName(this.ProjectFilePath);
             this.SrcBasePath = Path.Combine(WorkingDir, "src");
             this.ExternalFilesDir = externalFilesDir;
@@ -145,6 +151,8 @@ namespace OpenEpl.TextECode
         public TextECodeGenerator Generate()
         {
             GeneratedPaths.Clear();
+            OrderModel.Clear();
+            FolderOrderMap.Clear();
             {
                 foreach (var (manifest, refInfo) in IdToNameMap.LibDefinedName.Zip(Code.Libraries, (manifest, refInfo) => (manifest, refInfo)))
                 {
@@ -214,6 +222,9 @@ namespace OpenEpl.TextECode
             HandleNormalObjects("@Struct", null, Code.Structs, true, x => x.Hidden);
             HandleConstants(null, Resource.Constants);
             HandleForms(null, Resource.Forms);
+
+            WriteOrderFile();
+
             return this;
         }
 
@@ -279,6 +290,17 @@ namespace OpenEpl.TextECode
                 Indented = true 
             });
             JsonSerializer.Serialize(writer, projectModel);
+        }
+
+        private void WriteOrderFile()
+        {
+            using var stream = File.Open(OrderFilePath, FileMode.Create);
+            using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions()
+            {
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                Indented = true 
+            });
+            JsonSerializer.Serialize(writer, OrderModel);
         }
 
         private bool HasIcon()
@@ -535,6 +557,26 @@ namespace OpenEpl.TextECode
             return result;
         }
 
+        private List<OrderItem> PrepareOrderListFor(int keyId)
+        {
+            if (keyId == 0)
+            {
+                return OrderModel.Items;
+            }
+            if (FolderOrderMap.TryGetValue(keyId, out var result))
+            {
+                return result.Items;
+            }
+            var folderInfo = FolderKeyMap[keyId];
+            result = new OrderItem.Folder()
+            {
+                Name = folderInfo.Name
+            };
+            PrepareOrderListFor(folderInfo.ParentKey).Add(result);
+            FolderOrderMap.Add(keyId, result);
+            return result.Items;
+        }
+
         private Stream CreateEFormFile(CodeFolderInfo folderInfo, string name)
         {
             var path = Path.Combine(PrepareFolder(folderInfo).FullName, $"{name}.eform");
@@ -546,6 +588,13 @@ namespace OpenEpl.TextECode
         {
             var path = Path.Combine(PrepareFolder(folderInfo).FullName, $"{name}.ecode");
             GeneratedPaths.Add(path);
+            if (!name.StartsWith('@'))
+            {
+                PrepareOrderListFor(folderInfo?.Key ?? 0).Add(new OrderItem.Elem()
+                {
+                    Name = name
+                });
+            }
             return new StreamWriter(File.Open(path, FileMode.Create), Encoding.UTF8);
         }
 
