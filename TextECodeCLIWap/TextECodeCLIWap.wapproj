@@ -65,9 +65,7 @@
       <PublishProfile Condition="'$(Platform)'=='x64'">Properties\PublishProfiles\publish-win-x64.pubxml</PublishProfile>
       <PublishProfile Condition="'$(Platform)'=='x86'">Properties\PublishProfiles\publish-win-x86.pubxml</PublishProfile>
     </ProjectReference>
-    <ProjectReference Include="..\TextECodeContextMenu\TextECodeContextMenu.csproj">
-      <PublishProfile Condition="'$(Platform)'=='x64'">Properties\PublishProfiles\publish-win-x64.pubxml</PublishProfile>
-      <PublishProfile Condition="'$(Platform)'=='x86'">Properties\PublishProfiles\publish-win-x86.pubxml</PublishProfile>
+    <ProjectReference Include="..\TextECode.ShellExtension\TextECode.ShellExtension.vcxproj">
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

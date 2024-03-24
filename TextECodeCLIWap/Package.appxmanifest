@@ -61,21 +61,18 @@
         </uap:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:SurrogateServer DisplayName="TextECodeContextMenu.GenerateCmd">
-              <com:Class Id="f481db40-c55e-4d0e-8854-6f92f788f855" Path="TextECodeContextMenu\TextECodeContextMenu.comhost.dll" ThreadingModel="Both"/>
-            </com:SurrogateServer>
-            <com:SurrogateServer DisplayName="TextECodeContextMenu.RestoreCmd">
-              <com:Class Id="ea7015ff-6cf8-4b6a-b0dd-0f9ca9553b96" Path="TextECodeContextMenu\TextECodeContextMenu.comhost.dll" ThreadingModel="Both"/>
+            <com:SurrogateServer DisplayName="TextECode Shell Extension">
+              <com:Class Id="e77317d4-6e4f-4703-940b-a775267fce10" Path="TextECode.ShellExtension\TextECode.ShellExtension.dll" ThreadingModel="Both"/>
             </com:SurrogateServer>
           </com:ComServer>
         </com:Extension>
         <desktop4:Extension Category="windows.fileExplorerContextMenus">
           <desktop4:FileExplorerContextMenus>
             <desktop5:ItemType Type=".e">
-              <desktop5:Verb Id="GenerateCmd" Clsid="f481db40-c55e-4d0e-8854-6f92f788f855" />
+              <desktop5:Verb Id="TextECodeShellExtension" Clsid="e77317d4-6e4f-4703-940b-a775267fce10" />
             </desktop5:ItemType>
             <desktop5:ItemType Type=".eproject">
-              <desktop5:Verb Id="RestoreCmd" Clsid="ea7015ff-6cf8-4b6a-b0dd-0f9ca9553b96" />
+              <desktop5:Verb Id="TextECodeShellExtension" Clsid="e77317d4-6e4f-4703-940b-a775267fce10" />
             </desktop5:ItemType>
           </desktop4:FileExplorerContextMenus>
         </desktop4:Extension>
