@@ -26,15 +26,15 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mime-Detective" Version="23.10.1" />
-    <PackageReference Include="Mime-Detective.Definitions.Condensed" Version="23.10.1" />
-    <PackageReference Include="QIQI.EProjectFile" Version="1.9.3">
+    <PackageReference Include="Mime-Detective" Version="24.7.1" />
+    <PackageReference Include="Mime-Detective.Definitions.Condensed" Version="24.7.1" />
+    <PackageReference Include="QIQI.EProjectFile" Version="1.9.4">
       <PrivateAssets>build; analyzers</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
     <PackageReference Include="Antlr4BuildTasks" Version="12.3.0" PrivateAssets="all" />
     <PackageReference Include="QuikGraph" Version="2.5.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.3" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
   </ItemGroup>
 
 </Project>
