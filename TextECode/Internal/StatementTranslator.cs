@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
+using Microsoft.Extensions.Logging;
 using OpenEpl.TextECode.Grammar;
 using OpenEpl.TextECode.Internal.Expressions;
 using QIQI.EProjectFile.Expressions;
@@ -33,7 +34,7 @@ namespace OpenEpl.TextECode.Internal
                 stat.Var = args.GetOrDefault(1)?.ToNative();
                 stat.CommentOnStart = context.commentOnStart?.Text;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 var sb = new StringBuilder();
                 sb.Append("计次循环首 ");
@@ -44,6 +45,7 @@ namespace OpenEpl.TextECode.Internal
                     sb.Append(context.commentOnStart.Text);
                 }
                 stat.UnexaminedCode = sb.ToString();
+                P.translatorLogger.LogWarning(e, "预编译代码 \"{LineText}\" 失败", stat.UnexaminedCode);
             }
             return stat;
         }
@@ -61,7 +63,7 @@ namespace OpenEpl.TextECode.Internal
                 stat.Condition = args.GetOrDefault(0)?.ToNative();
                 stat.CommentOnEnd = context.commentOnEnd?.Text;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 var sb = new StringBuilder();
                 sb.Append("循环判断尾 ");
@@ -72,6 +74,7 @@ namespace OpenEpl.TextECode.Internal
                     sb.Append(context.commentOnEnd.Text);
                 }
                 stat.UnexaminedCode = sb.ToString();
+                P.translatorLogger.LogWarning(e, "预编译代码 \"{LineText}\" 失败", stat.UnexaminedCode);
             }
             return stat;
         }
@@ -111,7 +114,7 @@ namespace OpenEpl.TextECode.Internal
                 stat.Var = args.GetOrDefault(3)?.ToNative();
                 stat.CommentOnStart = context.commentOnStart?.Text;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 var sb = new StringBuilder();
                 sb.Append("变量循环首 ");
@@ -122,6 +125,7 @@ namespace OpenEpl.TextECode.Internal
                     sb.Append(context.commentOnStart.Text);
                 }
                 stat.UnexaminedCode = sb.ToString();
+                P.translatorLogger.LogWarning(e, "预编译代码 \"{LineText}\" 失败", stat.UnexaminedCode);
             }
             return stat;
         }
@@ -139,7 +143,7 @@ namespace OpenEpl.TextECode.Internal
                 stat.Condition = args.GetOrDefault(0)?.ToNative();
                 stat.Comment = context.comment?.Text;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 var sb = new StringBuilder();
                 sb.Append("如果 ");
@@ -150,6 +154,7 @@ namespace OpenEpl.TextECode.Internal
                     sb.Append(context.comment.Text);
                 }
                 stat.UnexaminedCode = sb.ToString();
+                P.translatorLogger.LogWarning(e, "预编译代码 \"{LineText}\" 失败", stat.UnexaminedCode);
             }
             return stat;
         }
@@ -166,7 +171,7 @@ namespace OpenEpl.TextECode.Internal
                 stat.Condition = args.GetOrDefault(0)?.ToNative();
                 stat.Comment = context.comment?.Text;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 var sb = new StringBuilder();
                 sb.Append("如果真 ");
@@ -177,6 +182,7 @@ namespace OpenEpl.TextECode.Internal
                     sb.Append(context.comment.Text);
                 }
                 stat.UnexaminedCode = sb.ToString();
+                P.translatorLogger.LogWarning(e, "预编译代码 \"{LineText}\" 失败", stat.UnexaminedCode);
             }
             return stat;
         }
@@ -196,7 +202,7 @@ namespace OpenEpl.TextECode.Internal
                     caseInfo.Condition = args.GetOrDefault(0)?.ToNative();
                     caseInfo.Comment = item.comment?.Text;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     var sb = new StringBuilder();
                     sb.Append("判断 ");
@@ -207,6 +213,7 @@ namespace OpenEpl.TextECode.Internal
                         sb.Append(item.comment.Text);
                     }
                     caseInfo.UnexaminedCode = sb.ToString();
+                    P.translatorLogger.LogWarning(e, "预编译代码 \"{LineText}\" 失败", caseInfo.UnexaminedCode);
                 }
                 stat.Case.Add(caseInfo);
             }
@@ -228,7 +235,7 @@ namespace OpenEpl.TextECode.Internal
                 stat.Condition = args.GetOrDefault(0)?.ToNative();
                 stat.CommentOnStart = context.commentOnStart?.Text;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 var sb = new StringBuilder();
                 sb.Append("判断循环首 ");
@@ -239,6 +246,7 @@ namespace OpenEpl.TextECode.Internal
                     sb.Append(context.commentOnStart.Text);
                 }
                 stat.UnexaminedCode = sb.ToString();
+                P.translatorLogger.LogWarning(e, "预编译代码 \"{LineText}\" 失败", stat.UnexaminedCode);
             }
             return stat;
         }
