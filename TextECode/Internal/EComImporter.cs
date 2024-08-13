@@ -194,7 +194,7 @@ namespace OpenEpl.TextECode.Internal
                 var baseClassId = src.BaseClass;
                 while (baseClassId != 0 && baseClassId != -1)
                 {
-                    var baseClass = ecClassMap[src.BaseClass];
+                    var baseClass = ecClassMap[baseClassId];
                     methods = methods.Concat(baseClass.Methods.Select(x => ecMethodMap[x]));
                     baseClassId = baseClass.BaseClass;
                 }
