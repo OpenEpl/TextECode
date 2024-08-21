@@ -108,7 +108,6 @@ namespace OpenEpl.TextECode.Internal
                 Parent = parentId,
                 Events = Array.Empty<KeyValuePair<int, int>>()
             };
-            formInfo.Elements.Add(control);
             var children = new List<int>();
             HandleControlChildren(xmlElem, control.Id, children);
             var tabs = xmlElem.GetElementsByTagName($"{xmlElem.Name}.子夹").OfType<XmlElement>();
@@ -126,6 +125,9 @@ namespace OpenEpl.TextECode.Internal
             }
             ReadProperty(xmlElem, control);
             control.Children = children.ToArray();
+            // Add parent (container) after all children are added
+            // See https://github.com/OpenEpl/TextECode/issues/13
+            formInfo.Elements.Add(control);
             return control.Id;
         }
 
