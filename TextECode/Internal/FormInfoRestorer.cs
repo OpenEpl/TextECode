@@ -110,8 +110,11 @@ namespace OpenEpl.TextECode.Internal
             };
             var children = new List<int>();
             HandleControlChildren(xmlElem, control.Id, children);
-            var tabs = xmlElem.GetElementsByTagName($"{xmlElem.Name}.子夹").OfType<XmlElement>();
-            var tabsEnumerator = tabs.GetEnumerator();
+            var tabsEnumerator = xmlElem
+                .ChildNodes
+                .OfType<XmlElement>()
+                .Where(x => x.Name == $"{xmlElem.Name}.子夹")
+                .GetEnumerator();
             if (tabsEnumerator.MoveNext())
             {
                 var tab = tabsEnumerator.Current;
