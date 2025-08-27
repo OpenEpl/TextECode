@@ -1,4 +1,5 @@
 ﻿#pragma comment(lib, "Shlwapi.lib")
+#pragma comment(lib, "runtimeobject.lib")
 
 #define WIN32_LEAN_AND_MEAN
 #include "TextECode.ShellExtension.h"
