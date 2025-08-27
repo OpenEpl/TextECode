@@ -342,9 +342,13 @@ namespace OpenEpl.TextECode
             }
             var NonGeneratedEmptyDirectories = srcBase.GetDirectories("*", SearchOption.AllDirectories)
                 .Where(x => !GeneratedPaths.Contains(x.FullName))
-                .Where(x => x.EnumerateFiles().FirstOrDefault() == null);
+                .Reverse();
             foreach (var item in NonGeneratedEmptyDirectories)
             {
+                if (item.EnumerateFileSystemInfos().Any())
+                {
+                    continue;
+                }
                 try
                 {
                     item.Delete();
