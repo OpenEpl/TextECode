@@ -539,21 +539,37 @@ namespace OpenEpl.TextECode
 
         private DirectoryInfo PrepareFolder(CodeFolderInfo folderInfo)
         {
-            var path = "";
+            var paths = new List<string>();
             if (folderInfo is not null)
             {
-                path = folderInfo.Name;
+                paths.Add(folderInfo.Name);
                 var curFolderId = folderInfo.ParentKey;
                 while (curFolderId != 0)
                 {
                     var curFolder = FolderKeyMap[curFolderId];
-                    path = $"{curFolder.Name}{Path.DirectorySeparatorChar}{path}";
+                    paths.Add(curFolder.Name);
                     curFolderId = curFolder.ParentKey;
                 }
             }
-            path = Path.Combine(SrcBasePath, path);
-            var result = Directory.CreateDirectory(path);
-            GeneratedPaths.Add(result.FullName);
+            paths.Reverse();
+            for (int takeCount = paths.Count; takeCount > 0; takeCount--)
+            {
+                var checkPath = SrcBasePath;
+                for (int i = 0; i < takeCount; i++)
+                {
+                    checkPath = Path.Combine(checkPath, paths[i]);
+                }
+                if (!GeneratedPaths.Add(checkPath))
+                {
+                    // if already recorded, then parent folders should also be recorded
+                    // break here to avoid redundant checks
+                    break;
+                }
+            }
+            var fullPath = paths.Count > 0
+                ? Path.Combine(SrcBasePath, Path.Combine(paths.ToArray()))
+                : SrcBasePath;
+            var result = Directory.CreateDirectory(fullPath);
             return result;
         }
 
