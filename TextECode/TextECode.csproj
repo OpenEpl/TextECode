@@ -34,7 +34,7 @@
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
     <PackageReference Include="Antlr4BuildTasks" Version="12.3.0" PrivateAssets="all" />
     <PackageReference Include="QuikGraph" Version="2.5.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+    <PackageReference Include="System.Text.Json" Version="8.0.6" />
   </ItemGroup>
 
 </Project>
